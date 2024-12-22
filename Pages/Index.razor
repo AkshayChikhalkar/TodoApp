@@ -1,0 +1,50 @@
+﻿@page "/"
+@using System.Linq
+
+<h3>Todo List</h3>
+
+<div>
+    < input @bind="NewTask" placeholder="Add Task Here" />
+    <button @onclick="AddTask"> Add </button>
+</div>
+
+<ul>
+    @foreach (var task in Tasks)
+    {
+        <li>
+            <input type="checkbox" @bind="task.IsCompleted"   />
+            @task.Title
+        </li>
+    }
+</ul>
+
+@code {
+    private string NewTask { get; set; } = string.Empty;
+
+    private List<TodoTask> Tasks { get; set; } = new List<TodoTask>();
+
+    private void AddTask()
+    {
+        if (!string.IsNullOrWhiteSpace(NewTask))
+        {
+            Tasks.Insert(0, new TodoTask { Title = NewTask });
+            NewTask = string.Empty;
+        }
+    }
+
+    private void ReorganizeTasks()
+    {
+
+        var completedTasks = Tasks.Where(t => t.IsCompleted).ToList();
+
+        var incompleteTasks = Tasks.Where(t => !t.IsCompleted).ToList();
+        Tasks = incompleteTasks.Concat(completedTasks).ToList();
+    }
+
+    private class TodoTask
+    {
+        public string Title { get; set; } = string.Empty; // Initialize to avoid null warning
+
+        public bool IsCompleted { get; set; }
+    }
+}
